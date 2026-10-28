@@ -34,6 +34,7 @@ local.properties
 *.keystore
 !debug.keystore
 .kotlin/
+.node_modules
 
 # node.js
 #
@@ -73,3 +74,20 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Local configuration and environment
+.bundle/
+.env
+.env.*
+!.env.example
+
+# Logs and caches
+*.log
+.eslintcache
+.npm/
+.watchman-cookie-*
+*.tsbuildinfo
+
+# Generated Android packages
+*.apk
+*.aab

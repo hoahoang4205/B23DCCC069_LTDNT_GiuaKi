@@ -1,45 +1,92 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { ActivityIndicator, StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { RootStackParamList } from './src/types/task';
+import { TasksProvider, useTasks } from './src/context/TasksContext';
+import { TaskListScreen } from './src/screens/TaskListScreen';
+import { TaskFormScreen } from './src/screens/TaskFormScreen';
+import { TaskDetailScreen } from './src/screens/TaskDetailScreen';
+import { colors, fontFamily } from './src/theme';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function RootNavigator() {
+  const { loaded } = useTasks();
+
+  if (!loaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="TaskList"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.surface,
+          },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            fontFamily,
+            fontWeight: '700',
+          },
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: colors.background,
+          },
+        }}
+      >
+        <Stack.Screen
+          name="TaskList"
+          component={TaskListScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="TaskForm"
+          component={TaskFormScreen}
+          options={{
+            title: 'Thêm công việc',
+            headerBackTitle: 'Quay lại',
+          }}
+        />
+        <Stack.Screen
+          name="TaskDetail"
+          component={TaskDetailScreen}
+          options={{
+            title: 'Chi tiết công việc',
+            headerBackTitle: 'Danh sách',
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar barStyle="dark-content" />
+      <TasksProvider>
+        <RootNavigator />
+      </TasksProvider>
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export default App;
